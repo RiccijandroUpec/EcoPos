@@ -366,7 +366,7 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
             jtxtDbPassword.setText("");
             
         } else if ("MySQL".equals(jcboDBDriver.getSelectedItem())) {
-            jtxtDbDriverLib.setText(new File(new File(dirname), "lib/mysql-connector-java-5.1.26-bin.jar").getAbsolutePath());
+            jtxtDbDriverLib.setText(new File(new File(dirname), "lib/mysql-connector-java-5.1.49.jar").getAbsolutePath());
             jtxtDbDriver.setText("com.mysql.jdbc.Driver");
             jtxtDbURL.setText("jdbc:mysql://localhost:3306/ecopos");
             

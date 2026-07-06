@@ -1272,7 +1272,7 @@ if (!"xxx999_999xxx_x9x9x9".equals(rs.getString(1))) {
 
     private void jNewdbTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jNewdbTypeActionPerformed
         if ("MySQL".equals(jNewdbType.getSelectedItem())) {
-            jtxtDbDriverLib.setText(System.getProperty("user.dir") + "/lib/mysql-connector-java-5.1.26-bin.jar");
+            jtxtDbDriverLib.setText(System.getProperty("user.dir") + "/lib/mysql-connector-java-5.1.49.jar");
             jtxtDbDriver.setText("com.mysql.jdbc.Driver");
             jtxtDbURL.setText("jdbc:mysql://localhost:3306/ecopos");
 
