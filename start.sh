@@ -19,7 +19,15 @@
 #    along with uniCenta oPOS.  If not, see <http://www.gnu.org/licenses/>.
 
 DIRNAME=`dirname $0`
-CP=$DIRNAME/unicentaopos.jar
+# A packaged distribution places ecopos.jar next to this script; running
+# straight from a source checkout after `ant -f build_working.xml jar`
+# leaves it under build/jar/ instead, so fall back to that.
+if [ -f "$DIRNAME/ecopos.jar" ]; then
+    JARFILE=$DIRNAME/ecopos.jar
+else
+    JARFILE=$DIRNAME/build/jar/ecopos.jar
+fi
+CP=$JARFILE
 CP=$CP:$DIRNAME/lib/jasperreports-4.5.1.jar
 CP=$CP:$DIRNAME/lib/jcommon-1.0.15.jar
 CP=$CP:$DIRNAME/lib/jfreechart-1.0.12.jar
@@ -32,7 +40,7 @@ CP=$CP:$DIRNAME/lib/barcode4j-2.0.jar
 CP=$CP:$DIRNAME/lib/commons-codec-1.4.jar
 CP=$CP:$DIRNAME/lib/velocity-1.7-dep.jar
 CP=$CP:$DIRNAME/lib/oro-2.0.8.jar
-CP=$CP:$DIRNAME/lib/commons-collections-3.2.1.jar
+CP=$CP:$DIRNAME/lib/commons-collections-3.2.2.jar
 CP=$CP:$DIRNAME/lib/commons-lang-2.4.jar
 # Fix "java.lang.NoSuchFieldError: absoluteClassCache" by including the following
 CP=$CP:$DIRNAME/lib/bsh-2.1b5.jar
@@ -42,7 +50,13 @@ CP=$CP:$DIRNAME/lib/jpos1121.jar
 CP=$CP:$DIRNAME/lib/swingx-all-1.6.4.jar
 CP=$CP:$DIRNAME/lib/substance.jar
 CP=$CP:$DIRNAME/lib/substance-swingx.jar
-# Includes missing classes (e.g. orgjdesktop/layout)
+CP=$CP:$DIRNAME/lib/substance-extras.jar
+# Needed for NetBeans-generated forms (org.jdesktop.layout.GroupLayout) and the
+# Substance L&F animations; missing these causes a NoClassDefFoundError on startup.
+CP=$CP:$DIRNAME/lib/swing-layout-1.0.4.jar
+CP=$CP:$DIRNAME/lib/AbsoluteLayout.jar
+CP=$CP:$DIRNAME/lib/trident.jar
+# Also include any other jar in lib/ not explicitly listed above.
 CP=$CP:$DIRNAME/lib/*
 
 # Apache Axis SOAP libraries.
@@ -54,9 +68,13 @@ CP=$CP:$DIRNAME/lib/commons-discovery-0.4.jar
 CP=$CP:$DIRNAME/lib/commons-logging-1.1.jar
 CP=$CP:$DIRNAME/locales/
 CP=$CP:$DIRNAME/reports/
-
-# Include main JAR
-CP=$CP:$DIRNAME/dist/unicentapos.jar
+# ResourceBundle only checks the classpath root, not subfolders, so every bundled
+# language's *_xx.properties files (under locales/<Language>/) must be added
+# explicitly or the app silently falls back to English regardless of user.language.
+for langdir in "$DIRNAME"/locales/*/; do
+    [ -d "${langdir}locales" ] && CP=$CP:${langdir}locales/
+    [ -d "${langdir}reports" ] && CP=$CP:${langdir}reports/
+done
 
 # Select the library folder
 case "`uname -s`" in

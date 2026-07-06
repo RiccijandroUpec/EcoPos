@@ -7,7 +7,7 @@
 ![Ant](https://img.shields.io/badge/Build-Apache%20Ant-A81C7D?logo=apacheant&logoColor=white)
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
-EcoPos es un sistema de Punto de Venta (POS) de escritorio para negocios de retail y hostelería, construido en Java Swing. Es un fork de [uniCenta oPOS](https://github.com/mweimerskirch/unicentaopos) 3.81 (que a su vez desciende de Openbravo POS), renombrado y mantenido como EcoPos.
+EcoPos es un sistema de Punto de Venta (POS) de escritorio para negocios de retail y hostelería, construido en Java Swing.
 
 Licenciado bajo [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
 
@@ -43,11 +43,18 @@ Compatible con Windows, Linux o macOS.
 | `reports/` | Plantillas JasperReports para tickets y reportes |
 | `build_working.xml` | Script de build Ant autocontenido (compila y empaqueta el jar) |
 
-> 💡 Los paquetes Java internos siguen llamándose `com.openbravo.*` (sin cambios respecto al proyecto original) — solo se renombraron el nombre de la app, la marca visible y los identificadores por defecto a EcoPos.
+> 💡 Los paquetes Java internos usan el namespace `com.openbravo.*`.
 
 ## 🔨 Compilación
 
-El proyecto originalmente usaba Apache Ant con metadatos de NetBeans (`build.xml` + `nbproject/`), que no están incluidos en este repositorio. Hasta que se restaure ese build, compila manualmente con el JDK:
+El `build.xml` original (NetBeans + Ant) depende de metadatos `nbproject/` que no están en este repositorio. En su lugar, usa **`build_working.xml`**, un build Ant autocontenido que sí compila y empaqueta el proyecto de punta a punta:
+
+```sh
+# Instala Apache Ant si no lo tienes (https://ant.apache.org/bindownload.cgi)
+ant -f build_working.xml jar
+```
+
+Esto genera `build/jar/ecopos.jar`. Si no tienes Ant a mano, el equivalente manual con solo el JDK es:
 
 ```sh
 # Desde la raíz del proyecto
@@ -67,19 +74,38 @@ done
 # Empaquetar el jar ejecutable
 mkdir -p build/jar
 printf 'Main-Class: com.openbravo.pos.forms.StartPOS\n' > manifest.txt
-jar cfm build/jar/unicentaopos.jar manifest.txt -C build/classes .
+jar cfm build/jar/ecopos.jar manifest.txt -C build/classes .
 ```
+
+> 💡 `src-beans`, `src-data` y `src-pos` se referencian entre sí (por ejemplo, componentes en `src-beans` usan `com.openbravo.pos.forms.AppConfig`), así que cualquier compilación necesita ver los tres directorios en el `sourcepath`, y cualquiera de los tres módulos puede terminar necesitando `lib/*.jar` (p. ej. `RXTXcomm.jar` para el soporte de puerto serie) — por eso las tres reglas de compilación en `build_working.xml` comparten el mismo classpath.
 
 ## ▶️ Ejecución
 
 Ejecuta el jar con las librerías necesarias en el classpath (ver `start.bat` / `start.sh` para la lista completa — JasperReports, POI, iText, Substance L&F, el driver JDBC de tu base de datos, etc.):
 
 ```sh
-java -cp "build/jar/unicentaopos.jar;lib/jasperreports-4.5.1.jar;lib/jcommon-1.0.15.jar;lib/jfreechart-1.0.12.jar;lib/swing-layout-1.0.4.jar;lib/AbsoluteLayout.jar;lib/trident.jar;lib/substance.jar;lib/substance-swingx.jar;lib/substance-extras.jar;lib/swingx-all-1.6.4.jar;lib/mysql-connector-java-5.1.26-bin.jar;locales/;reports/" \
+java -cp "build/jar/ecopos.jar;lib/jasperreports-4.5.1.jar;lib/jcommon-1.0.15.jar;lib/jfreechart-1.0.12.jar;lib/swing-layout-1.0.4.jar;lib/AbsoluteLayout.jar;lib/trident.jar;lib/substance.jar;lib/substance-swingx.jar;lib/substance-extras.jar;lib/swingx-all-1.6.4.jar;lib/mysql-connector-java-5.1.26-bin.jar;locales/;reports/" \
   -Ddirname.path="./" com.openbravo.pos.forms.StartPOS
 ```
 
+O más simple, usa el script ya armado con el classpath completo (todos los idiomas incluidos):
+
+```sh
+./start.sh        # Linux/macOS
+start.bat         # Windows
+```
+
 Al primer arranque, EcoPos escribe su configuración en `~/ecopos.properties`. Por defecto apunta a una base de datos Derby embebida; edita ese archivo (o usa la pantalla **Configuración → Base de datos** dentro de la app) para apuntar a MySQL/MariaDB, PostgreSQL, etc. Si apunta a un esquema vacío, EcoPos crea automáticamente todas las tablas y datos iniciales (roles, categoría/producto/impuestos por defecto) en el siguiente arranque.
+
+> 💡 `ResourceBundle` solo busca archivos de traducción en la raíz del classpath, no en subcarpetas — por eso `start.bat`/`start.sh` agregan explícitamente `locales/<Idioma>/locales/` y `locales/<Idioma>/reports/` de los 15 idiomas incluidos. Si armas tu propio classpath a mano (como el comando de arriba), sin esas rutas la app cae siempre a inglés sin importar `user.language`.
+
+## ✅ Tests
+
+Hay un puñado de tests JUnit para las clases de lógica pura (sin GUI ni base de datos): `AltEncrypter` (cifrado ida y vuelta), `LuhnAlgorithm` (validación de tarjetas) y `StringUtils`.
+
+```sh
+ant -f build_working.xml test
+```
 
 ## 🗄️ Datos por defecto
 
@@ -94,7 +120,6 @@ Renómbralos según tu negocio — **no los elimines**, otros registros pueden d
 ## 🔗 Enlaces importantes
 
 - 📦 Repositorio: [github.com/RiccijandroUpec/EcoPos](https://github.com/RiccijandroUpec/EcoPos)
-- 🧬 Proyecto original: [uniCenta oPOS (mirror en GitHub)](https://github.com/mweimerskirch/unicentaopos) · [Sources en uniCenta.com](https://unicenta.com/downloads/sources/)
 - 📜 Licencia GPL v3: [gnu.org/licenses/gpl-3.0](https://www.gnu.org/licenses/gpl-3.0.html)
 - ☕ Java 11 (Temurin): [adoptium.net](https://adoptium.net/temurin/releases/?version=11)
 - 🐘 XAMPP (MariaDB/MySQL local): [apachefriends.org](https://www.apachefriends.org/)
@@ -102,4 +127,4 @@ Renómbralos según tu negocio — **no los elimines**, otros registros pueden d
 
 ## 📜 Licencia
 
-GNU GPL v3 — ver las cabeceras de licencia en los archivos fuente individuales. Este proyecto es un fork de uniCenta oPOS; ver `Release Notes/` para el historial de versiones del proyecto original.
+GNU GPL v3 — ver las cabeceras de licencia en los archivos fuente individuales.

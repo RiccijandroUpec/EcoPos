@@ -39,6 +39,10 @@
     <!-- where the installers go -->
     <property name="dest.installer.pos" value="${basedir}/build/installerpos"/>
 
+    <!-- unit tests -->
+    <property name="test.src" value="${basedir}/test"/>
+    <property name="dest.test.classes" value="${basedir}/build/test-classes"/>
+
     <!-- ================================================================= -->
     <!-- I N I T                                                           -->
     <!-- ================================================================= -->
@@ -69,7 +73,20 @@
                debug="${javac.debug}"
                deprecation="${javac.deprecation}"
                optimize="${javac.optimize}"
-               target="${javac.minVMVersion}">
+               target="${javac.minVMVersion}"
+               includeantruntime="false">
+            <!-- src-beans, src-data and src-pos cross-reference each other's classes
+                 (e.g. beans use com.openbravo.pos.forms.AppConfig), so all three must
+                 be visible on the sourcepath even though only src-beans is compiled here.
+                 Since that pulls in src-pos files transitively, the lib/*.jar classpath
+                 (e.g. gnu.io from RXTXcomm.jar) must be available here too. -->
+            <classpath>
+                <fileset dir="${basedir}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+            <compilerarg value="-sourcepath"/>
+            <compilerarg path="${src.beans}${path.separator}${src.data}${path.separator}${src.pos}"/>
         </javac>
         <copy todir="${dest.classes}/beans">
             <fileset dir="${src.beans}">
@@ -89,10 +106,16 @@
                debug="${javac.debug}"
                deprecation="${javac.deprecation}"
                optimize="${javac.optimize}"
-               target="${javac.minVMVersion}">
+               target="${javac.minVMVersion}"
+               includeantruntime="false">
             <classpath>
+                <fileset dir="${basedir}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
                 <pathelement location="${dest.classes}/beans"/>
             </classpath>
+            <compilerarg value="-sourcepath"/>
+            <compilerarg path="${src.beans}${path.separator}${src.data}${path.separator}${src.pos}"/>
 		</javac>
         <copy todir="${dest.classes}/data">
             <fileset dir="${src.data}">
@@ -146,17 +169,53 @@
             <fileset dir="${dest.classes}/pos"/>
         </copy>  
         <mkdir dir="${dest.jar}" />
-        <jar jarfile="${dest.jar}/unicentaopos.jar"
+        <jar jarfile="${dest.jar}/ecopos.jar"
              compress="true"
              basedir="${basedir}/build/zip">
             <manifest>
-                <attribute name="Implementation-Vendor" value="uniCenta"/>
-                <attribute name="Implementation-Title" value="uniCenta oPOS"/>
+                <attribute name="Implementation-Vendor" value="EcoPos"/>
+                <attribute name="Implementation-Title" value="EcoPos (fork of uniCenta oPOS)"/>
                 <attribute name="Implementation-Version" value="${version}"/>
                 <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
     	    </manifest>
         </jar>
         <delete dir="${basedir}/build/zip" />
+    </target>
+
+    <!-- ================================================================= -->
+    <!-- T E S T                                                           -->
+    <!-- ================================================================= -->
+
+    <target name="test" depends="compilebeans,compiledata,compilepos" description="Compile and run the JUnit test suite.">
+        <mkdir dir="${dest.test.classes}" />
+        <javac srcdir="${test.src}"
+               destdir="${dest.test.classes}"
+               debug="on"
+               includeantruntime="false">
+            <classpath>
+                <pathelement location="${dest.classes}/beans"/>
+                <pathelement location="${dest.classes}/data"/>
+                <pathelement location="${dest.classes}/pos"/>
+                <fileset dir="${lib}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        <junit haltonfailure="yes" fork="yes" printsummary="yes">
+            <classpath>
+                <pathelement location="${dest.test.classes}"/>
+                <pathelement location="${dest.classes}/beans"/>
+                <pathelement location="${dest.classes}/data"/>
+                <pathelement location="${dest.classes}/pos"/>
+                <fileset dir="${lib}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+            <formatter type="brief" usefile="false"/>
+            <batchtest>
+                <fileset dir="${test.src}" includes="**/*Test.java"/>
+            </batchtest>
+        </junit>
     </target>
 
 
@@ -226,7 +285,7 @@
         <copy file="${basedir}/unicentaopos_128.png" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/README" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/logging.properties" todir="${basedir}/build/zip"/>
-        <copy file="${dest.jar}/unicentaopos.jar" todir="${basedir}/build/zip"/>
+        <copy file="${dest.jar}/ecopos.jar" todir="${basedir}/build/zip"/>
         <copy todir="${basedir}/build/zip/licensing">
             <fileset dir="${basedir}/licensing"/>
         </copy>        
@@ -405,7 +464,7 @@
 	      todir="${dest.dist}/jws"/>
 	<copy file="${dest.jar}/windows-native.jar" 
 	      todir="${dest.dist}/jws"/>
-	<copy file="${dest.jar}/unicentaopos.jar" 
+	<copy file="${dest.jar}/ecopos.jar" 
 	      todir="${dest.dist}/jws"/>
 	<copy file="${dest.jar}/locales.jar" 
 	      todir="${dest.dist}/jws"/>

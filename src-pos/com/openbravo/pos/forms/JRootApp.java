@@ -285,15 +285,15 @@ public class JRootApp extends JPanel implements AppView {
         String newText = m_props.getProperty("start.text");
         if (newText != null) {
             if (newText.equals("")){
-            jLabel1.setText("<html><center>EcoPos - Touch Friendly Point of Sale (fork of uniCenta oPOS)<br>" +
+            jLabel1.setText("<html><center>EcoPos - Punto de Venta Amigable al Tacto (fork de uniCenta oPOS)<br>" +
             "Copyright \u00A9 2009-2014 uniCenta, 2026 EcoPos <br>" +
             "https://github.com/RiccijandroUpec/EcoPos<br>" +
             "<br>" +
-            "EcoPos is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br>" +
+            "EcoPos es software libre: puedes redistribuirlo y/o modificarlo bajo los t\u00E9rminos de la Licencia P\u00FAblica General GNU publicada por la Free Software Foundation, ya sea la versi\u00F3n 3 de la Licencia, o (a tu elecci\u00F3n) cualquier versi\u00F3n posterior.<br>" +
             "<br>" +
-            "EcoPos is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.<br>" +
+            "EcoPos se distribuye con la esperanza de que sea \u00FAtil, pero SIN NINGUNA GARANT\u00CDA; ni siquiera la garant\u00EDa impl\u00EDcita de COMERCIALIZACI\u00D3N o IDONEIDAD PARA UN PROP\u00D3SITO PARTICULAR. Consulta la Licencia P\u00FAblica General GNU para m\u00E1s detalles.<br>" +
             "<br>" +
-            "You should have received a copy of the GNU General Public License along with EcoPos.  If not, see http://www.gnu.org/licenses/<br>" +
+            "Deber\u00EDas haber recibido una copia de la Licencia P\u00FAblica General GNU junto con EcoPos. Si no es as\u00ED, consulta http://www.gnu.org/licenses/<br>" +
             "</center>");}
             else{
             try {    

@@ -21,6 +21,7 @@ package com.openbravo.pos.config;
 
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.pos.forms.AppConfig;
+import com.openbravo.pos.forms.AppLocal;
 import java.awt.Component;
 import javax.swing.SpinnerNumberModel;
 
@@ -312,7 +313,7 @@ public class JPanelTicketSetup extends javax.swing.JPanel implements PanelConfig
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(102, 102, 102));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Service Charge function in development");
+        jLabel4.setText(AppLocal.getIntString("message.servicechargedev"));
         jPanel5.add(jLabel4);
         jLabel4.setBounds(380, 10, 290, 70);
 

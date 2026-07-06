@@ -166,7 +166,7 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
         setPreferredSize(new java.awt.Dimension(650, 500));
 
         jLabel6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel6.setText("Database");
+        jLabel6.setText(AppLocal.getIntString("Label.Database"));
 
         jcboDBDriver.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jcboDBDriver.addActionListener(new java.awt.event.ActionListener() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     uniCenta oPOS - Touch friendly Point Of Sale
-    Copyright (c) 2009-2014 uniCenta.
+    Copyright (c) 2009-2014 uniCenta, 2026 EcoPos.
     http://sourceforge.net/projects/unicentaopos
 
     This file is part of uniCenta oPOS.
@@ -28,7 +28,7 @@
 <!--            <display animation="curtain"> -->
 <!--            <display animation="none"> -->
         <line>
-            <text>uniCenta oPOS</text>
+            <text>EcoPos</text>
         </line>
         <line>
             <text>Point Of Sale</text>
