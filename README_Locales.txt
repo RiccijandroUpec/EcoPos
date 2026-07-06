@@ -1,40 +1,33 @@
-Project: EcoPos v3.60
-Topic:	Locales
-Author:	Jack Gerrard
-Date: 	5th April 2014
+EcoPos - Locales / Translations
+===============================
 
-Acknowledgement: The content of the language/Locale files are compiled from the efforts of
-Openbravo, Openbravo POS Community Members and EcoPos, and we appreciate and 
-acknowledge everyone who has contributed to making this distribution possible.
+EcoPos ships with 15 languages. English is the default/fallback language;
+not all locales are completely translated (untranslated keys automatically
+fall back to English).
 
-All files, including these Locale files, are made available under the GPL v3 License and within those terms must be passed on to any person who requests them
-*******************************************************************************
-Please refer to Locales Guide for installation details.
-
-EcoPos supports 15 languages.
-
-English UK is the default language set.
-
-Not all locales are completely translated
-
-The locale files shipped with this version of EcoPos are the latest at the date of this release.
-
-Latest locales can be found here: github.com/RiccijandroUpec/EcoPos/downloads
-
-Application Locales (Default):
-beans_messages.properties is the Java generic message file
-data_messages.properties is relevant to the data interface 
-erp_messages.properties - no longer used (ex-Openbravo POS)
-pos_messages.properties is the MAIN application label and Messages file
+Application locale files:
+- beans_messages.properties  - generic Java UI component messages
+- data_messages.properties   - data-access layer messages
+- erp_messages.properties    - legacy ERP-integration labels
+- pos_messages.properties    - the MAIN application labels and messages
 
 Reports:
-Each report has a .properties file associated with it.
-You will find the files in the EcoPos installation folder in the
-\reports\com\openbravo\reports
+Each report has its own .properties file, found under
+reports/com/openbravo/reports/
 
-HOW TO CHANGE YOUR LANGUAGE
-1. Copy the locale you need from the language sub-folder \locales\languagename
-   into the \ecopos\locales parent folder
-2. Copy the content of reports folder from the language sub-folder
-   \locales\languagename\reports folder into the \ecopos\reports folder 
-3. Set the EcoPos Configuration>Locale to your required language
+Directory layout:
+- locales/<Language>/locales/   - that language's *_xx.properties files
+- locales/<Language>/reports/   - that language's report label files
+
+How language selection works:
+start.bat and start.sh already put every bundled language's locales/ and
+reports/ subfolder on the classpath, so switching language is just a matter
+of setting it in EcoPos Configuration > Locale and restarting - no manual
+file copying needed.
+
+If you build your own classpath by hand (skipping start.bat/start.sh), note
+that Java's ResourceBundle only looks for translation files directly on the
+classpath root, not in subfolders. Without explicitly adding
+locales/<Language>/locales/ and locales/<Language>/reports/ to your
+classpath, the app will silently fall back to English regardless of the
+configured language.
