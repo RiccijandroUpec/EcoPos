@@ -1274,12 +1274,12 @@ if (!"xxx999_999xxx_x9x9x9".equals(rs.getString(1))) {
         if ("MySQL".equals(jNewdbType.getSelectedItem())) {
             jtxtDbDriverLib.setText(System.getProperty("user.dir") + "/lib/mysql-connector-java-5.1.26-bin.jar");
             jtxtDbDriver.setText("com.mysql.jdbc.Driver");
-            jtxtDbURL.setText("jdbc:mysql://localhost:3306/unicentaopos");
+            jtxtDbURL.setText("jdbc:mysql://localhost:3306/ecopos");
 
         } else if ("PostgreSQL".equals(jNewdbType.getSelectedItem())) {
             jtxtDbDriverLib.setText(System.getProperty("user.dir") + "/lib/postgresql-9.2-1003.jdbc4.jar");
             jtxtDbDriver.setText("org.postgresql.Driver");
-            jtxtDbURL.setText("jdbc:postgresql://localhost:5432/unicentaopos");
+            jtxtDbURL.setText("jdbc:postgresql://localhost:5432/ecopos");
         } else {
         }
     }//GEN-LAST:event_jNewdbTypeActionPerformed

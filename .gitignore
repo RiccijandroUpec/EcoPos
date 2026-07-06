@@ -1,0 +1,4 @@
+build/
+*.class
+sources.txt
+manifest.txt

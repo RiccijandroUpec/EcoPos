@@ -231,7 +231,7 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
         jLabel5.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         jButton1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jButton1.setText("uniCenta Web site");
+        jButton1.setText("EcoPos");
         jButton1.setMaximumSize(new java.awt.Dimension(150, 45));
         jButton1.setMinimumSize(new java.awt.Dimension(150, 45));
         jButton1.setPreferredSize(new java.awt.Dimension(150, 45));
@@ -356,7 +356,7 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
         } else if ("Apache Derby Client/Server".equals(jcboDBDriver.getSelectedItem())) {
             jtxtDbDriverLib.setText(new File(new File(dirname), "lib/derbyclient.jar").getAbsolutePath());
             jtxtDbDriver.setText("org.apache.derby.jdbc.ClientDriver");
-            jtxtDbURL.setText("jdbc:derby://localhost:1527/unicentaopos");
+            jtxtDbURL.setText("jdbc:derby://localhost:1527/ecopos");
             
         } else if ("HSQLDB".equals(jcboDBDriver.getSelectedItem())) {
             jtxtDbDriverLib.setText(new File(new File(dirname), "lib/hsqldb.jar").getAbsolutePath());
@@ -368,17 +368,17 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
         } else if ("MySQL".equals(jcboDBDriver.getSelectedItem())) {
             jtxtDbDriverLib.setText(new File(new File(dirname), "lib/mysql-connector-java-5.1.26-bin.jar").getAbsolutePath());
             jtxtDbDriver.setText("com.mysql.jdbc.Driver");
-            jtxtDbURL.setText("jdbc:mysql://localhost:3306/unicentaopos");
+            jtxtDbURL.setText("jdbc:mysql://localhost:3306/ecopos");
             
         } else if ("Oracle 11g Express".equals(jcboDBDriver.getSelectedItem())) {
             jtxtDbDriverLib.setText(new File(new File(dirname), "lib/ojdbc6.jar").getAbsolutePath());
             jtxtDbDriver.setText("oracle.jdbc.driver.OracleDriver");
-            jtxtDbURL.setText("jdbc:oracle:thin://localhost:1521/unicentaopos");
+            jtxtDbURL.setText("jdbc:oracle:thin://localhost:1521/ecopos");
 
         } else if ("PostgreSQL".equals(jcboDBDriver.getSelectedItem())) {
             jtxtDbDriverLib.setText(new File(new File(dirname), "lib/postgresql-9.2-1003.jdbc4.jar").getAbsolutePath());
             jtxtDbDriver.setText("org.postgresql.Driver");
-            jtxtDbURL.setText("jdbc:postgresql://localhost:5432/unicentaopos");            
+            jtxtDbURL.setText("jdbc:postgresql://localhost:5432/ecopos");            
         } else {
             
         }
@@ -418,7 +418,7 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         try {
-            String URL ="http://www.unicenta.com";
+            String URL ="https://github.com/RiccijandroUpec/EcoPos";
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(URL));
         }
         catch (IOException e) {

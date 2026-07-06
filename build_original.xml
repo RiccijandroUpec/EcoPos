@@ -20,12 +20,12 @@
     along with uniCenta oPOS.  If not, see <http://www.gnu.org/licenses/>.
  -->
 
-<project name="unicentaopos" basedir="." default="dist">
+<project name="ecopos" basedir="." default="dist">
     <!-- ================================================================= -->
     <!-- P R O P E R T I E S                                               -->
     <!-- ================================================================= -->
     <!-- program name -->
-    <property name="name" value="unicentaopos"/>
+    <property name="name" value="ecopos"/>
     <!-- project version -->
     <property name="version" value="3.01"/>
     <!-- javac properties -->
