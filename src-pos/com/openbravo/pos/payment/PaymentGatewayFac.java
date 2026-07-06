@@ -45,20 +45,6 @@ public class PaymentGatewayFac {
                 return new PaymentGatewayExt();
             case "PayPoint / SecPay":
                 return new PaymentGatewayPayPoint(props);
-            case "AuthorizeNet":
-                return new PaymentGatewayAuthorizeNet(props);
-            case "BluePay AUTH.NET EMU":
-                return new PaymentGatewayBluePayAUTHNETEMU(props);
-            case "BluePay 2.0 POST":
-                return new PaymentGatewayBluePay20POST(props);
-            case "La Caixa (Spain)":
-                return new PaymentGatewayCaixa(props);
-            case "Planetauthorize":
-                return new PaymentGatewayPlanetauthorize(props);
-            case "First Data / LinkPoint / YourPay":
-                return new PaymentGatewayLinkPoint(props);
-            case "PaymentsGateway.net":
-                return new PaymentGatewayPGNET(props);
             default:
                 return null;
         }

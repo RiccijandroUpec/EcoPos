@@ -23,12 +23,8 @@ package com.openbravo.pos.config;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppLocal;
-import com.openbravo.pos.payment.ConfigPaymentPanelBluePay20POST;
-import com.openbravo.pos.payment.ConfigPaymentPanelBluePayAUTHNETEMU;
-import com.openbravo.pos.payment.ConfigPaymentPanelCaixa;
 import com.openbravo.pos.payment.ConfigPaymentPanelEmpty;
 import com.openbravo.pos.payment.ConfigPaymentPanelGeneric;
-import com.openbravo.pos.payment.ConfigPaymentPanelLinkPoint;
 import com.openbravo.pos.payment.PaymentConfiguration;
 import java.awt.Component;
 import java.util.HashMap;
@@ -60,13 +56,6 @@ public class JPanelConfigPayment extends javax.swing.JPanel implements PanelConf
         initPayments("Not defined", new ConfigPaymentPanelEmpty());
         initPayments("external", new ConfigPaymentPanelEmpty());
         initPayments("PayPoint / SecPay", new ConfigPaymentPanelGeneric());
-        initPayments("AuthorizeNet", new ConfigPaymentPanelGeneric());
-        initPayments("BluePay AUTH.NET EMU", new ConfigPaymentPanelBluePay20POST()); // JG Added BluePay re: Walter Wojick
-        initPayments("BluePay 2.0 POST", new ConfigPaymentPanelBluePay20POST()); // JG Added BluePay re: Walter Wojick
-        initPayments("Planetauthorize", new ConfigPaymentPanelGeneric());
-        initPayments("First Data / LinkPoint / YourPay", new ConfigPaymentPanelLinkPoint());
-        initPayments("PaymentsGateway.net", new ConfigPaymentPanelGeneric());
-        initPayments("La Caixa (Spain)", new ConfigPaymentPanelCaixa());
         
         // Lector de tarjetas.
         jcboCardReader.addItem("Not defined");
