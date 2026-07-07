@@ -2,3 +2,8 @@ build/
 *.class
 sources.txt
 manifest.txt
+
+# Runtime deployment of ecopos-sri-connector (separate repo/build) - only
+# the EcoPos-side hook (the .bs script + Menu/Role wiring) belongs here,
+# never the connector's jar or its local runtime data (flags, config).
+sri-conector/
