@@ -57,7 +57,9 @@
     <class name="button.totaldiscount"/>
     <class name="button.print"/>
     <class name="button.opendrawer"/>
-    
+    <class name="button.sriinvoiceon"/>
+    <class name="button.sriinvoiceoff"/>
+
 <!-- Additional button scripts -->
     <class name="button.linediscount"/>
     <class name="button.sendorder"/>

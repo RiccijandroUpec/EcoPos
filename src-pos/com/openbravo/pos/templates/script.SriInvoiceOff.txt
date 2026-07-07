@@ -1,0 +1,9 @@
+// script.SriInvoiceOff
+// --- ecopos-sri-connector hook -------------------------------------------
+// DATA-ONLY resource - counterpart to script.SriInvoiceOn.txt. Marks THIS
+// ticket to NOT be invoiced electronically with the SRI when it closes -
+// the ticket still prints normally either way, this only controls whether
+// Ticket.Close.xml drops the flag file ecopos-sri-connector watches for.
+
+ticket.setProperty("sri.invoice", "false");
+javax.swing.JOptionPane.showMessageDialog(null, "Facturación electrónica SRI: DESACTIVADA para este ticket (el ticket se imprime igual).");

@@ -68,8 +68,16 @@ UIManager.put("OptionPane.buttonFont", new FontUIResource(new Font(originalFont.
 // this folder doesn't exist or the write fails for any reason, the sale
 // must never be affected - so every step here is wrapped and swallows
 // its own errors.
+//
+// Whether to invoice THIS ticket is controlled by the cashier via the
+// "Facturar SRI: SI/NO" buttons in the ticket screen (script.SriInvoiceOn.txt
+// / script.SriInvoiceOff.txt), which set/clear the "sri.invoice" ticket
+// property. Default is "false" (no invoice) if the cashier never touched
+// the buttons - the ticket always prints normally regardless of this flag,
+// since printing happens through a completely separate flow.
 try {
-    if (ticket.getTicketType() == com.openbravo.pos.ticket.TicketInfo.RECEIPT_NORMAL) {
+    boolean facturarSri = "true".equals(ticket.getProperty("sri.invoice", "false"));
+    if (facturarSri && ticket.getTicketType() == com.openbravo.pos.ticket.TicketInfo.RECEIPT_NORMAL) {
         java.io.File dirname = new java.io.File(System.getProperty("dirname.path", "./"));
         java.io.File pendientes = new java.io.File(dirname, "sri-conector/pendientes");
         pendientes.mkdirs();

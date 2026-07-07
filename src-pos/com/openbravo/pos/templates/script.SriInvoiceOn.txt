@@ -1,0 +1,12 @@
+// script.SriInvoiceOn
+// --- ecopos-sri-connector hook -------------------------------------------
+// DATA-ONLY resource - lets the cashier mark THIS ticket to be invoiced
+// electronically with the SRI when it closes. The flag is stored as a
+// per-ticket property (persisted in RECEIPTS.ATTRIBUTES via
+// ticket.setProperty/getProperty) and read back by Ticket.Close.xml when
+// deciding whether to drop the flag file ecopos-sri-connector watches for.
+// Never affects ticket printing, which happens unconditionally regardless
+// of this flag.
+
+ticket.setProperty("sri.invoice", "true");
+javax.swing.JOptionPane.showMessageDialog(null, "Facturación electrónica SRI: ACTIVADA para este ticket.");
