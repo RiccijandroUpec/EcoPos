@@ -137,6 +137,15 @@ INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('58', 'Ticket.TicketLin
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('59', 'Window.Logo', 1, $FILE{/com/openbravo/pos/templates/window.logo.png});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('60', 'Window.Title', 0, $FILE{/com/openbravo/pos/templates/Window.Title.txt});
 
+-- ecopos-sri-connector: botones "SRI: SI/NO" de la pantalla de venta
+-- (Ticket.Buttons.xml de arriba ya los referencia por key/image) - sin
+-- estas dos filas de script y las dos de imagen, los botones existirian
+-- pero no harian nada / se verian sin icono en una instalacion nueva.
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('61', 'script.SriInvoiceOn', 0, $FILE{/com/openbravo/pos/templates/script.SriInvoiceOn.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('62', 'script.SriInvoiceOff', 0, $FILE{/com/openbravo/pos/templates/script.SriInvoiceOff.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('63', 'img.sriinvoiceon', 1, $FILE{/com/openbravo/pos/templates/img.sriinvoiceon.png});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('64', 'img.sriinvoiceoff', 1, $FILE{/com/openbravo/pos/templates/img.sriinvoiceoff.png});
+
 CREATE TABLE TAXCUSTCATEGORIES (
     ID VARCHAR(255) NOT NULL,
     NAME VARCHAR(255) NOT NULL,
