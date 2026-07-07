@@ -7,6 +7,34 @@
 // deciding whether to drop the flag file ecopos-sri-connector watches for.
 // Never affects ticket printing, which happens unconditionally regardless
 // of this flag.
+//
+// Also makes sure there's an email to send the invoice to automatically
+// once the SRI authorizes it. If the customer already selected on this
+// ticket has one saved in their profile (CustomerInfoExt.getEmail()), that
+// one is used as-is - no need to ask again. Only if there's no customer
+// profile email (walk-in/consumidor final, or a customer without one
+// saved) does it ask, storing the answer as the "sri.email" ticket
+// property (same persistence mechanism as "sri.invoice"). Not required to
+// proceed either way - leaving it blank just means no automatic email; it
+// can still be sent later by hand from the connector's Historial screen.
 
 ticket.setProperty("sri.invoice", "true");
-javax.swing.JOptionPane.showMessageDialog(null, "Facturación electrónica SRI: ACTIVADA para este ticket.");
+
+correoDePerfil = null;
+if (ticket.getCustomer() != null) {
+    correoDePerfil = ticket.getCustomer().getEmail();
+}
+
+if (correoDePerfil != null && !correoDePerfil.trim().equals("")) {
+    javax.swing.JOptionPane.showMessageDialog(null,
+        "Facturación electrónica SRI: ACTIVADA para este ticket.\nSe enviará automáticamente al correo del cliente: " + correoDePerfil);
+} else {
+    correo = javax.swing.JOptionPane.showInputDialog(null,
+        "Este cliente no tiene un correo guardado en su perfil.\n" +
+        "Correo para enviarle la factura electrónica (déjalo vacío si no aplica):",
+        ticket.getProperty("sri.email", ""));
+    if (correo != null) {
+        ticket.setProperty("sri.email", correo.trim());
+    }
+    javax.swing.JOptionPane.showMessageDialog(null, "Facturación electrónica SRI: ACTIVADA para este ticket.");
+}
