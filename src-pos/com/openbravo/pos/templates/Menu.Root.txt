@@ -145,6 +145,7 @@ group = menu.addGroup("Menu.Backoffice");
     group.addPanel("/com/openbravo/images/printer.png", "Menu.Printer", "com.openbravo.pos.panels.JPanelPrinter");
     group.addPanel("/com/openbravo/images/timer.png", "Menu.CheckInCheckOut", "com.openbravo.pos.epm.JPanelEmployeePresence");
     group.addExecution("/com/openbravo/images/configuration.png", "Menu.SriConnectorConfig", "/com/openbravo/pos/templates/SriConnectorConfig.bs");
+    group.addExecution("/com/openbravo/images/reports.png", "Menu.SriConnectorHistorial", "/com/openbravo/pos/templates/SriConnectorHistorial.bs");
 
 // Deprecated options. Only required with Openbravo ERP software
 //       submenu.addTitle("Menu.Maintenance.ERP");
