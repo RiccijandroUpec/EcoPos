@@ -69,16 +69,27 @@ UIManager.put("OptionPane.buttonFont", new FontUIResource(new Font(originalFont.
 // must never be affected - so every step here is wrapped and swallows
 // its own errors.
 //
-// Whether to invoice THIS ticket is controlled by the cashier via the
-// "Facturar SRI: SI/NO" buttons in the ticket screen (script.SriInvoiceOn.txt
-// / script.SriInvoiceOff.txt), which set/clear the "sri.invoice" ticket
-// property. Default is "false" (no invoice) if the cashier never touched
-// the buttons - the ticket always prints normally regardless of this flag,
+// Whether to invoice is a GLOBAL on/off setting (not per-ticket) controlled
+// via the "Facturar SRI: SI/NO" buttons in the ticket screen
+// (script.SriInvoiceOn.txt / script.SriInvoiceOff.txt), which write directly
+// to sri-conector/facturacion-global.properties (key "activo") - it applies
+// to every sale from the moment it's pressed until someone presses the
+// other button, no per-ticket exception. Default is OFF (no invoice) if
+// that file doesn't exist yet (nobody has pressed either button since
+// install). The ticket always prints normally regardless of this setting,
 // since printing happens through a completely separate flow.
 try {
-    boolean facturarSri = "true".equals(ticket.getProperty("sri.invoice", "false"));
+    boolean facturarSri = false;
+    java.io.File dirname = new java.io.File(System.getProperty("dirname.path", "./"));
+    java.io.File archivoEstadoGlobal = new java.io.File(dirname, "sri-conector/facturacion-global.properties");
+    if (archivoEstadoGlobal.exists()) {
+        java.util.Properties estadoGlobal = new java.util.Properties();
+        java.io.FileReader lectorEstado = new java.io.FileReader(archivoEstadoGlobal);
+        estadoGlobal.load(lectorEstado);
+        lectorEstado.close();
+        facturarSri = "true".equals(estadoGlobal.getProperty("activo", "false"));
+    }
     if (facturarSri && ticket.getTicketType() == com.openbravo.pos.ticket.TicketInfo.RECEIPT_NORMAL) {
-        java.io.File dirname = new java.io.File(System.getProperty("dirname.path", "./"));
         java.io.File pendientes = new java.io.File(dirname, "sri-conector/pendientes");
         pendientes.mkdirs();
         java.io.File flag = new java.io.File(pendientes, ticket.getId() + ".flag");
