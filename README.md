@@ -9,6 +9,10 @@
 
 EcoPos es un sistema de Punto de Venta (POS) de escritorio para negocios de retail y hostelería, construido en Java Swing.
 
+**Hecho en Ecuador, para negocios ecuatorianos** — con soporte de
+facturación electrónica SRI vía el módulo complementario
+[ecopos-sri-connector](https://github.com/RiccijandroUpec/EcoPos_SRI_conector).
+
 Licenciado bajo [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
 
 ## ✨ Características
@@ -128,3 +132,12 @@ Renómbralos según tu negocio — **no los elimines**, otros registros pueden d
 ## 📜 Licencia
 
 GNU GPL v3 — ver las cabeceras de licencia en los archivos fuente individuales.
+
+## ☕ Apoya este proyecto / Contacto
+
+- 📸 Instagram (también sirve como "invítame un café"): [@riccijandro](https://instagram.com/riccijandro)
+- 🐙 GitHub: [@RiccijandroUpec](https://github.com/RiccijandroUpec)
+- 💼 LinkedIn: [@riccijandro](https://linkedin.com/in/riccijandro)
+- 🐦 X/Twitter: [@riccijandro](https://x.com/riccijandro)
+
+Contribuciones bienvenidas — abre un *issue* o *pull request* en el repo.
