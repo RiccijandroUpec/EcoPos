@@ -1,50 +1,29 @@
 // SriConnectorConfig.bs
 // --- ecopos-sri-connector hook ------------------------------------------
 // DATA-ONLY resource (this script + the Menu.Root/Role.Administrator
-// entries pointing at it) - no ECOPos .java file is modified. Launches
-// ecopos-sri-connector's own configuration window (a separate JVM/process,
-// com.openbravo.pos.sri.ui.ConfiguracionFrame) so the administrator can
-// edit the SRI emisor data (RUC, razon social, certificado .p12, etc.)
-// without leaving ECOPos. ECOPos never loads any connector class directly -
-// it only starts an external "java -cp ..." process, same spirit as the
-// Ticket.Close flag-file hook.
-//
-// Expected layout (relative to ECOPos's own working directory,
-// "dirname.path"): sri-conector/ecopos-sri-connector.jar, with
-// sri-conector/config/datos-emisor.properties alongside it once saved.
+// entries pointing at it) - no ECOPos .java file is modified BY THIS
+// SCRIPT (the merge itself did touch a few ECOPos .java files, but that
+// was a deliberate, separate change - see EcoPosSriGlue/EcoPosSriBridge).
+// Since 2026-07-17 ecopos-sri-connector runs merged in the same process/
+// JVM as ECOPos: this just opens its configuration window in-process via
+// the bridge, instead of spawning a brand-new "java -cp ..." subprocess
+// like before.
 
 import com.openbravo.pos.forms.BeanFactory;
 import com.openbravo.pos.forms.ProcessAction;
 import com.openbravo.data.gui.MessageInf;
+import com.openbravo.pos.sri.EcoPosSriGlue;
+import com.openbravo.pos.sri.EcoPosSriBridge;
 
 action = new ProcessAction() {
     MessageInf execute() {
-        java.io.File dirname = new java.io.File(System.getProperty("dirname.path", "./"));
-        java.io.File carpetaConector = new java.io.File(dirname, "sri-conector");
-        java.io.File jarConector = new java.io.File(carpetaConector, "ecopos-sri-connector.jar");
-
-        if (!jarConector.exists()) {
+        EcoPosSriBridge sriBridge = EcoPosSriGlue.getInstance(app.getProperties());
+        if (sriBridge == null) {
             return new MessageInf(MessageInf.SGN_WARNING,
-                "No se encontro " + jarConector.getAbsolutePath() +
-                " - copia ahi el jar de ecopos-sri-connector antes de abrir su configuracion.");
+                "No se encontro sri-conector/ecopos-sri-connector.jar - copialo ahi antes de abrir su configuracion.");
         }
-
-        try {
-            String java = System.getProperty("java.home") + java.io.File.separator + "bin" + java.io.File.separator + "java";
-            // BeanShell 2.1b5 no resuelve bien el constructor varargs
-            // ProcessBuilder(String...) via reflexion - hay que pasar un
-            // String[] explicito (confirmado con una prueba real).
-            String[] comando = new String[] {
-                java, "-cp", jarConector.getAbsolutePath(), "com.openbravo.pos.sri.ui.ConfiguracionFrame"
-            };
-            ProcessBuilder pb = new ProcessBuilder(comando);
-            pb.directory(carpetaConector);
-            pb.start();
-            return new MessageInf(MessageInf.SGN_SUCCESS, "Abriendo configuracion del conector SRI...");
-        } catch (Exception eSri) {
-            return new MessageInf(MessageInf.SGN_WARNING,
-                "No se pudo abrir la configuracion del conector SRI: " + eSri.getMessage());
-        }
+        sriBridge.abrirConfiguracionEmisor();
+        return new MessageInf(MessageInf.SGN_SUCCESS, "Abriendo configuracion del conector SRI...");
     }
 };
 

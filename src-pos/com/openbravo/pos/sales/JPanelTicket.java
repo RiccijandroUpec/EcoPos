@@ -43,6 +43,8 @@ import com.openbravo.pos.scale.ScaleException;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.sri.EcoPosSriBridge;
+import com.openbravo.pos.sri.EcoPosSriGlue;
 import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
@@ -57,6 +59,8 @@ import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -1370,7 +1374,37 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
                             executeEvent(ticket, ticketext, "ticket.close", new ScriptArg("print", paymentdialog.isPrintSelected()));
 
-                            // Print receipt. 
+                            // ecopos-sri-connector (modo fusionado, mismo proceso/JVM):
+                            // reemplaza el viejo hook BeanShell que escribia un .flag en
+                            // sri-conector/pendientes/ para que un servicio de Windows
+                            // aparte lo recogiera. Mismo archivo/clave/comportamiento por
+                            // defecto que antes (ver Ticket.Close.xml, ahora sin ese
+                            // bloque) - solo que la llamada es directa y asincrona. Nunca
+                            // debe interrumpir el cierre de la venta.
+                            try {
+                                if (ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
+                                    File dirname = new File(System.getProperty("dirname.path", "./"));
+                                    File archivoEstadoGlobal = new File(dirname, "sri-conector/facturacion-global.properties");
+                                    boolean facturarSri = false;
+                                    if (archivoEstadoGlobal.exists()) {
+                                        Properties estadoGlobal = new Properties();
+                                        try (FileReader lectorEstado = new FileReader(archivoEstadoGlobal)) {
+                                            estadoGlobal.load(lectorEstado);
+                                        }
+                                        facturarSri = "true".equals(estadoGlobal.getProperty("activo", "false"));
+                                    }
+                                    if (facturarSri) {
+                                        EcoPosSriBridge sriBridge = EcoPosSriGlue.getInstance(m_App.getProperties());
+                                        if (sriBridge != null) {
+                                            sriBridge.procesarTicketAsync(ticket.getId());
+                                        }
+                                    }
+                                }
+                            } catch (Exception eSri) {
+                                // Nunca dejar que un problema de facturacion SRI interrumpa la venta.
+                            }
+
+                            // Print receipt.
 // John L July 2014 previous || warranty print reinstated
                             printTicket(paymentdialog.isPrintSelected() || warrantyPrint
                                     ? "Printer.Ticket"

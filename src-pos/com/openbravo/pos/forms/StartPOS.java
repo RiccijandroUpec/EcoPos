@@ -21,6 +21,7 @@ package com.openbravo.pos.forms;
 
 import com.openbravo.format.Formats;
 import com.openbravo.pos.instance.InstanceQuery;
+import com.openbravo.pos.sri.EcoPosSriGlue;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Locale;
@@ -85,7 +86,12 @@ public class StartPOS {
                 
                 AppConfig config = new AppConfig(args);
                 config.load();
-                
+
+                // ecopos-sri-connector (modo fusionado, mismo proceso/JVM): arranca
+                // el puente (si esta instalado) y su reintento periodico. Nunca
+                // lanza ni bloquea el arranque de ECOPos si algo falla aca.
+                EcoPosSriGlue.startAtBoot(config);
+
                 // set Locale.
                 String slang = config.getProperty("user.language");
                 String scountry = config.getProperty("user.country");
