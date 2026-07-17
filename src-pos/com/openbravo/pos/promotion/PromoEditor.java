@@ -6,7 +6,6 @@ package com.openbravo.pos.promotion;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.Statement;
 import com.openbravo.basic.BasicException;
 import com.openbravo.beans.JCalendarDialog;
 import com.openbravo.data.gui.ComboBoxValModel;
@@ -20,10 +19,8 @@ import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.panels.JProductFinder;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.ProductInfoExt;
-import com.openbravo.pos.util.PropertyUtils;
 import java.awt.Component;
 import java.math.BigInteger;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -50,13 +47,14 @@ public class PromoEditor extends JPanel implements EditorRecord {
     String _DescBonusArticle = null;
     private Object m_sID;
     private DataLogicSales m_dlSales;
-    private Session s;
+    private AppView m_App;
 
     /** Creates new form PlacesEditor
      * @param app
      * @param dlSales
      * @param dirty */
     public PromoEditor(AppView app, DataLogicSales dlSales, DirtyManager dirty) {
+        m_App = app;
         m_dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
         initComponents();
 //        jLabel13.setText("%");
@@ -1340,37 +1338,22 @@ private void OnCheckCategory(java.awt.event.FocusEvent evt) {
     }
     
     private void getCatID(String name) throws BasicException {
-        Connection connection;// = null;
-        Statement statement;// = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet;// = null;
-        String prodname = null;
-
-        PropertyUtils properties = new PropertyUtils();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
 
         try {
+            Connection connection = (Connection) m_App.getSession().getConnection();
 
-            String driverName = properties.getDriverName();
-            Class.forName(driverName);
+            preparedStatement = (PreparedStatement) connection.prepareStatement("SELECT * FROM CATEGORIES WHERE NAME = ?");
+            preparedStatement.setString(1, name);
 
-            String url = properties.getUrl();
-            String username = properties.getDBUser();
-            String password = properties.getDBPassword();
-            connection = (Connection) DriverManager.getConnection(url, username, password);
-
-            statement = (Statement) connection.createStatement();
-
-            resultSet = statement.executeQuery("SELECT * FROM CATEGORIES WHERE NAME = '" + name + "'");
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String id = resultSet.getString("ID");
-                
-                    m_jCategory.setText(id);
-                
-            }
 
-            connection.close();
-        } catch (ClassNotFoundException e) {
-            // Could not find the database driver
+                    m_jCategory.setText(id);
+
+            }
         } catch (SQLException e) {
             // Could not connect to the database
 //            System.out.println(e);
@@ -1380,30 +1363,19 @@ private void OnCheckCategory(java.awt.event.FocusEvent evt) {
 }
     
     private void getCatName(String Id) throws BasicException {
-        Connection connection;// = null;
-        Statement statement;// = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet;// = null;
-        String prodname = null;
-
-        PropertyUtils properties = new PropertyUtils();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
 
         try {
+            Connection connection = (Connection) m_App.getSession().getConnection();
 
-            String driverName = properties.getDriverName();
-            Class.forName(driverName);
+            preparedStatement = (PreparedStatement) connection.prepareStatement("SELECT * FROM CATEGORIES WHERE ID = ?");
+            preparedStatement.setString(1, Id);
 
-            String url = properties.getUrl();
-            String username = properties.getDBUser();
-            String password = properties.getDBPassword();
-            connection = (Connection) DriverManager.getConnection(url, username, password);
-
-            statement = (Statement) connection.createStatement();
-
-            resultSet = statement.executeQuery("SELECT * FROM CATEGORIES WHERE ID = '" + Id + "'");
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String name = resultSet.getString("NAME");
-                
+
                 int ii=m_jCatName.getItemCount();
                 for(int i=1; i<ii; i++){
                     String a = m_jCatModel.getElementAt(i).toString();
@@ -1413,12 +1385,8 @@ private void OnCheckCategory(java.awt.event.FocusEvent evt) {
                         m_jCatModel.setSelectedItem(name);
                     }
                 }
-                
-            }
 
-            connection.close();
-        } catch (ClassNotFoundException e) {
-            // Could not find the database driver
+            }
         } catch (SQLException e) {
             // Could not connect to the database
 //            System.out.println(e);
@@ -1428,35 +1396,20 @@ private void OnCheckCategory(java.awt.event.FocusEvent evt) {
 }
     
     private void getProdName(String Id) throws BasicException {
-        Connection connection;// = null;
-        Statement statement;// = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet;// = null;
-        String prodname = null;
-
-        PropertyUtils properties = new PropertyUtils();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
 
         try {
+            Connection connection = (Connection) m_App.getSession().getConnection();
 
-            String driverName = properties.getDriverName();
-            Class.forName(driverName);
+            preparedStatement = (PreparedStatement) connection.prepareStatement("SELECT * FROM PRODUCTS WHERE ID = ?");
+            preparedStatement.setString(1, Id);
 
-            String url = properties.getUrl();
-            String username = properties.getDBUser();
-            String password = properties.getDBPassword();
-            connection = (Connection) DriverManager.getConnection(url, username, password);
-
-            statement = (Statement) connection.createStatement();
-
-            resultSet = statement.executeQuery("SELECT * FROM PRODUCTS WHERE ID = '" + Id + "'");
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String id = resultSet.getString("NAME");
                 m_jProdName.setText(id);
             }
-
-            connection.close();
-        } catch (ClassNotFoundException e) {
-            // Could not find the database driver
         } catch (SQLException e) {
             // Could not connect to the database
 //            System.out.println(e);
@@ -1466,35 +1419,20 @@ private void OnCheckCategory(java.awt.event.FocusEvent evt) {
 }
     
     private void getBonusName(String Id) throws BasicException {
-        Connection connection;// = null;
-        Statement statement;// = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet;// = null;
-        String prodname = null;
-
-        PropertyUtils properties = new PropertyUtils();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
 
         try {
+            Connection connection = (Connection) m_App.getSession().getConnection();
 
-            String driverName = properties.getDriverName();
-            Class.forName(driverName);
+            preparedStatement = (PreparedStatement) connection.prepareStatement("SELECT * FROM PRODUCTS WHERE ID = ?");
+            preparedStatement.setString(1, Id);
 
-            String url = properties.getUrl();
-            String username = properties.getDBUser();
-            String password = properties.getDBPassword();
-            connection = (Connection) DriverManager.getConnection(url, username, password);
-
-            statement = (Statement) connection.createStatement();
-
-            resultSet = statement.executeQuery("SELECT * FROM PRODUCTS WHERE ID = '" + Id + "'");
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String id = resultSet.getString("NAME");
                 m_jBonusProd.setText(id);
             }
-
-            connection.close();
-        } catch (ClassNotFoundException e) {
-            // Could not find the database driver
         } catch (SQLException e) {
             // Could not connect to the database
 //            System.out.println(e);

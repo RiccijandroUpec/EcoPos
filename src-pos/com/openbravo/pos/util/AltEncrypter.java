@@ -21,21 +21,42 @@ package com.openbravo.pos.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.*;
+import java.util.Arrays;
 import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
+ * Encripta/desencripta valores de configuracion (claves de BD, ERP, pasarelas de pago)
+ * a partir de una passphrase derivada de un dato conocido (p.ej. "cypherkey" + usuario).
+ * Como la passphrase es predecible, esto sigue siendo ofuscacion y no un secreto
+ * criptografico real (igual que ClaveCifrador en ecopos-sri-connector) - pero
+ * usa AES-GCM (autenticado, con IV aleatorio) en vez del DESEDE/ECB original,
+ * que reutilizaba el mismo bloque cifrado para bloques de texto plano identicos
+ * y no protegia la integridad del dato.
+ *
+ * Los valores ya cifrados con el esquema anterior se siguen pudiendo desencriptar
+ * (prefijo "AESGCM:" ausente = formato legado), para no romper claves ya guardadas
+ * en instalaciones existentes. encrypt() siempre produce el formato nuevo.
  *
  * @author JG uniCenta
  */
 public class AltEncrypter {
-    
-    private Cipher cipherDecrypt;
-    private Cipher cipherEncrypt;
-    
+
+    private static final String PREFIJO_AESGCM = "AESGCM:";
+    private static final int TAM_IV = 12;
+    private static final int TAM_TAG_BITS = 128;
+
+    private final SecretKeySpec claveAESGCM;
+
+    private Cipher cipherDecryptLegado;
+
     /** Creates a new instance of Encrypter
      * @param passPhrase */
     public AltEncrypter(String passPhrase) {
-        
+
+        claveAESGCM = derivarClaveAESGCM(passPhrase);
+
         try {
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
             sr.setSeed(passPhrase.getBytes("UTF8"));
@@ -43,19 +64,21 @@ public class AltEncrypter {
             kGen.init(168, sr);
             Key key = kGen.generateKey();
 
-            cipherEncrypt = Cipher.getInstance("DESEDE/ECB/PKCS5Padding");
-            cipherEncrypt.init(Cipher.ENCRYPT_MODE, key);
-            
-            cipherDecrypt = Cipher.getInstance("DESEDE/ECB/PKCS5Padding");
-            cipherDecrypt.init(Cipher.DECRYPT_MODE, key);
-//        } catch (UnsupportedEncodingException e) {  // JG 1 Oct 13 - use multicatch
-//        } catch (NoSuchPaddingException e) {
-//        } catch (NoSuchAlgorithmException e) {
-//        } catch (InvalidKeyException e) {
+            cipherDecryptLegado = Cipher.getInstance("DESEDE/ECB/PKCS5Padding");
+            cipherDecryptLegado.init(Cipher.DECRYPT_MODE, key);
         } catch (UnsupportedEncodingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
         }
     }
-    
+
+    private static SecretKeySpec derivarClaveAESGCM(String passPhrase) {
+        try {
+            MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            return new SecretKeySpec(sha256.digest(passPhrase.getBytes("UTF8")), "AES");
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            return null;
+        }
+    }
+
     /**
      *
      * @param str
@@ -63,28 +86,54 @@ public class AltEncrypter {
      */
     public String encrypt(String str) {
         try {
-            return StringUtils.byte2hex(cipherEncrypt.doFinal(str.getBytes("UTF8")));
-        } catch (UnsupportedEncodingException | BadPaddingException | IllegalBlockSizeException e) {
-//        } catch (UnsupportedEncodingException e) { // JG 1 Oct 13 - use multicatch
-//        } catch (BadPaddingException e) {
-//        } catch (IllegalBlockSizeException e) {
+            byte[] iv = new byte[TAM_IV];
+            SecureRandom.getInstanceStrong().nextBytes(iv);
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, claveAESGCM, new GCMParameterSpec(TAM_TAG_BITS, iv));
+            byte[] textoCifrado = cipher.doFinal(str.getBytes("UTF8"));
+
+            byte[] ivMasCifrado = new byte[iv.length + textoCifrado.length];
+            System.arraycopy(iv, 0, ivMasCifrado, 0, iv.length);
+            System.arraycopy(textoCifrado, 0, ivMasCifrado, iv.length, textoCifrado.length);
+
+            return PREFIJO_AESGCM + StringUtils.byte2hex(ivMasCifrado);
+        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
         }
         return null;
     }
-    
+
     /**
      *
      * @param str
      * @return
      */
     public String decrypt(String str) {
+        if (str != null && str.startsWith(PREFIJO_AESGCM)) {
+            return decryptAESGCM(str.substring(PREFIJO_AESGCM.length()));
+        }
+        return decryptLegado(str);
+    }
+
+    private String decryptAESGCM(String hexIvMasCifrado) {
         try {
-            return new String(cipherDecrypt.doFinal(StringUtils.hex2byte(str)), "UTF8");
-        } catch (UnsupportedEncodingException | BadPaddingException | IllegalBlockSizeException e) {
-//        } catch (UnsupportedEncodingException e) { // JG 1 Oct 13 - use multicatch
-//        } catch (BadPaddingException e) {
-//        } catch (IllegalBlockSizeException e) {            
+            byte[] ivMasCifrado = StringUtils.hex2byte(hexIvMasCifrado);
+            byte[] iv = Arrays.copyOfRange(ivMasCifrado, 0, TAM_IV);
+            byte[] textoCifrado = Arrays.copyOfRange(ivMasCifrado, TAM_IV, ivMasCifrado.length);
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, claveAESGCM, new GCMParameterSpec(TAM_TAG_BITS, iv));
+            return new String(cipher.doFinal(textoCifrado), "UTF8");
+        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
         }
         return null;
-    }    
+    }
+
+    private String decryptLegado(String str) {
+        try {
+            return new String(cipherDecryptLegado.doFinal(StringUtils.hex2byte(str)), "UTF8");
+        } catch (UnsupportedEncodingException | BadPaddingException | IllegalBlockSizeException e) {
+        }
+        return null;
+    }
 }

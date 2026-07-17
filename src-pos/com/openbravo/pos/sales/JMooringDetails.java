@@ -25,6 +25,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
@@ -37,9 +38,10 @@ import net.proteanit.sql.DbUtils;
  */
 public class JMooringDetails extends javax.swing.JDialog {
 
-        private Connection con;  
+        private Connection con;
         private ResultSet rs;
         private Statement stmt;
+        private PreparedStatement pstmt;
         private String ID;
         private String SQL;
         private String vesselName = "";
@@ -277,8 +279,10 @@ public class JMooringDetails extends javax.swing.JDialog {
         try{
          int row = jTableSelector.getSelectedRow();  
          vesselName =(jTableSelector.getModel().getValueAt(row, 0).toString());
-         SQL = "SELECT * FROM MOORERS WHERE VESSELNAME ='" + vesselName +"';";
-         rs = stmt.executeQuery(SQL);
+         SQL = "SELECT * FROM MOORERS WHERE VESSELNAME = ?";
+         pstmt = con.prepareStatement(SQL);
+         pstmt.setString(1, vesselName);
+         rs = pstmt.executeQuery();
          if (rs.next()){
              vesselDays=rs.getInt("DAYS");
              vesselSize=rs.getInt("SIZE");

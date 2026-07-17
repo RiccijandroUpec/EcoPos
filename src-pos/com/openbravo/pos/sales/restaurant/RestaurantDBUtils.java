@@ -138,15 +138,16 @@ public class RestaurantDBUtils {
      */
     public String getCustomerNameInTable(String tableName){
        try{
-            SQL = "SELECT CUSTOMER FROM PLACES WHERE NAME='"+ tableName + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT CUSTOMER FROM PLACES WHERE NAME=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,tableName);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String customer =rs.getString("CUSTOMER");
             return(customer);
-        }    
+        }
         }catch(Exception e){
-            }   
+            }
        return "";
   }
 
@@ -157,15 +158,16 @@ public class RestaurantDBUtils {
      */
     public String getCustomerNameInTableById(String tableId){
        try{
-            SQL = "SELECT CUSTOMER FROM PLACES WHERE ID='"+ tableId + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT CUSTOMER FROM PLACES WHERE ID=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,tableId);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String customer =rs.getString("CUSTOMER");
             return(customer);
-        }    
+        }
         }catch(Exception e){
-            }   
+            }
        return "";
   }
 
@@ -236,15 +238,16 @@ public class RestaurantDBUtils {
      */
     public String getWaiterNameInTable(String tableName){
        try{
-            SQL = "SELECT WAITER FROM PLACES WHERE NAME='"+ tableName + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT WAITER FROM PLACES WHERE NAME=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,tableName);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String waiter =rs.getString("WAITER");
             return(waiter);
-        }    
+        }
         }catch(Exception e){
-            }   
+            }
        return "";
   }
 
@@ -255,15 +258,16 @@ public class RestaurantDBUtils {
      */
     public String getWaiterNameInTableById(String tableID){
        try{
-            SQL = "SELECT WAITER FROM PLACES WHERE ID='"+ tableID + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT WAITER FROM PLACES WHERE ID=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,tableID);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String waiter =rs.getString("WAITER");
             return(waiter);
-        }    
+        }
         }catch(Exception e){
-            }   
+            }
        return "";
   }
 
@@ -302,17 +306,18 @@ public class RestaurantDBUtils {
      */
     public String getTicketIdInTable(String ID){
        try{
-            SQL = "SELECT TICKETID FROM PLACES WHERE ID='"+ ID + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT TICKETID FROM PLACES WHERE ID=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,ID);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String customer =rs.getString("TICKETID");
             return(customer);
-        }    
+        }
         }catch(Exception e){
-            }   
+            }
        return "";
-  }  
+  }
 
     /**
      *
@@ -365,16 +370,17 @@ public class RestaurantDBUtils {
      */
     public Integer countTicketIdInTable(String ticketID){
       try{
-            SQL = "SELECT COUNT(*) AS RECORDCOUNT FROM PLACES WHERE TICKETID='"+ ticketID + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT COUNT(*) AS RECORDCOUNT FROM PLACES WHERE TICKETID=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,ticketID);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             Integer count =rs.getInt("RECORDCOUNT");
             return(count);
-        }    
+        }
         }catch(Exception e){
             }
-     
+
      return 0;
  }
 
@@ -385,13 +391,14 @@ public class RestaurantDBUtils {
      */
     public String getTableDetails (String ticketID){
        try{
-            SQL = "SELECT NAME FROM PLACES WHERE TICKETID='"+ ticketID + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT NAME FROM PLACES WHERE TICKETID=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,ticketID);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String name =rs.getString("NAME");
             return(name);
-        }    
+        }
         }catch(Exception e){
             }
        return "";
@@ -418,17 +425,18 @@ public class RestaurantDBUtils {
      */
     public String getTableMovedName (String ticketID){
        try{
-            SQL = "SELECT NAME FROM PLACES WHERE TICKETID='"+ ticketID + "' AND TABLEMOVED ='true'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT NAME FROM PLACES WHERE TICKETID=? AND TABLEMOVED ='true'";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,ticketID);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             String name =rs.getString("NAME");
             return(name);
-        }    
+        }
         }catch(Exception e){
             }
        return null;
-       }  
+       }
 
     /**
      *
@@ -437,12 +445,13 @@ public class RestaurantDBUtils {
      */
     public Boolean getTableMovedFlag (String ticketID){
        try{
-            SQL = "SELECT TABLEMOVED FROM PLACES WHERE TICKETID='"+ ticketID + "'";   
-            stmt = (Statement) con.createStatement();  
-            rs = stmt.executeQuery(SQL);
+            SQL = "SELECT TABLEMOVED FROM PLACES WHERE TICKETID=?";
+            pstmt=con.prepareStatement(SQL);
+            pstmt.setString(1,ticketID);
+            rs = pstmt.executeQuery();
       if (rs.next()){
             return(rs.getBoolean("TABLEMOVED"));
-        }    
+        }
         }catch(Exception e){
             }
        return (false);
